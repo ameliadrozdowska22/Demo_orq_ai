@@ -35,6 +35,7 @@ graph TD;
     C --> D[Agent];
     D --> E[Manager Delegates Task if Needed];
     E --> F[Response];
+```
 
 - `A[Customer Query]`: A customer submits a query.
 - `B[Task Created]`: A task is created based on the query.
