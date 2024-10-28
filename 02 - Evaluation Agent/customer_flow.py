@@ -4,7 +4,6 @@ from pydantic import BaseModel
 from crew import CustomerServiceCrew, EvaluationCrew
 import json
 
-# State model to track customer queries and evaluations
 class TaskState(BaseModel):
     approved: bool = False
     last_feedback:str = ""
@@ -28,7 +27,6 @@ class CustomerQueryFlow(Flow[TaskState]):
             evaluation = await EvaluationCrew().crew().kickoff_async(inputs={"last_answer":self.state.current_output})
             evaluation = evaluation.json_dict
 
-            # Accessing approved and feedback keys from the evaluation
             self.state.approved = evaluation.get("approved", False)
             self.state.last_feedback = evaluation.get("feedback", "")
 
