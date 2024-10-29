@@ -31,15 +31,15 @@ A manager delegates the task to members of the crew based on the functionalities
 ```mermaid
 graph TD;
     A[Customer Query] --> B[Task Created];
-    B --> C[Manager Delegates Task];
+    B --> C[Manager];
     C --> D[Agent];
-    D --> E[Manager Delegates Task if Needed];
-    E --> F[Response];
+    D --> C[Manager];
+    C --> F[Response];
 ```
 
-- `A[Customer Query]`: A customer submits a query.
-- `B[Task Created]`: A task is created based on the query.
-- `C[Manager Delegates Task]`: The manager delegates the task to an agent.
-- `D[Agent]`: An agent (accounting, technical, marketing, human resource) processes the task.
-- `E[Manager Delegates Task if Needed]`: The agent reports to the manager, who evaluates whether the response sufficiently answers the query or if the task needs to be delegated again.
-- `F[Response]`: The manager provides a final response to the customer.
+- A customer submits a query.
+- A task is created based on the query.
+- The manager delegates the task to an agent.
+- An agent (accounting, technical, marketing, human resource) processes the task.
+- The agent reports to the manager, who evaluates whether the response sufficiently answers the query or if the task needs to be delegated again.
+- The manager provides a final response to the customer.
