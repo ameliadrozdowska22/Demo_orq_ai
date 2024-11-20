@@ -321,7 +321,7 @@ def sidebar_layout():
     This function arranges sidebar layout, and sets the values of API token and deployment key in the session
     """
 
-    st.sidebar.image("assets/orq.ai_logo.png", width=150)
+    st.sidebar.image("assets/orqai_logo.png", width=150)
 
     with st.sidebar.expander(label="Set parameters", expanded=True):
 
