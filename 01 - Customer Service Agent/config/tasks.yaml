@@ -1,6 +1,0 @@
-
-customer_query:
-  description: >
-    My account login is not recognising email address.
-  expected_output: >
-    Your final answer must include a solution that helps the system recognise the email address.
