@@ -15,7 +15,6 @@ APP_TITLE = 'Orq.ai Chat'
 st.set_page_config(APP_TITLE, page_icon="📈", layout="wide")
 st.title(APP_TITLE)
 
-theme = st._config.get_option("theme")
 
 # Initialize session state variables if they don't exist
 
