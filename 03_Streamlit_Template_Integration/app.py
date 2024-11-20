@@ -2,7 +2,6 @@ import streamlit as st
 from utils import generate_response, get_variables, convert, get_deployments
 import time
 import base64
-import PyPDF2
 from typing import Optional
 from orq_ai_sdk import OrqAI    
 from orq_ai_sdk.exceptions import OrqAIException
@@ -284,14 +283,14 @@ def chat_layout(variables):
                         "content": [{"type": "text", "text": response}]  # content is a single dictionary
                     })
 
-                except Exception as e:
-                    st.error(f"Error occurred: {str(e)}")
+                except:
+                    pass
 
         else:
             st.info('Please provide all the necessary parameters')
 
-    except Exception as e:
-                    st.error(f"Error occurred: {str(e)}")
+    except:
+        pass
 
     return
 
@@ -373,8 +372,8 @@ def sidebar_layout():
                 additional_parameters_layout(variables)
                 chat_layout(variables) 
 
-    except Exception as e:
-                    st.error(f"Error occurred: {str(e)}")
+    except:
+        pass
 
     return
 
