@@ -271,10 +271,14 @@ def chat_layout(variables):
                         if not sources:
                             st.text("No sources available.")
                         else:
+                            counter = 0
                             for source in sources:
+                                counter += 1
                                 file_name = source["file_name"]
                                 page_number = source["page_number"]
-                                st.text(f"{file_name} - {page_number} page")   
+                                chunk_text = source["chunk"]
+                                st.markdown(f"**{counter}. {file_name} - {page_number} page:**")
+                                st.markdown(chunk_text) 
 
                     #####################################################################################################################
 

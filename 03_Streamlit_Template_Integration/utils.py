@@ -38,7 +38,8 @@ def generate_response(variable_dict, api_token, key_input, context_input, file_i
     for retrieval in generation.retrievals:
         sources.append({
             "file_name": retrieval.metadata.file_name,
-            "page_number": retrieval.metadata.page_number
+            "page_number": retrieval.metadata.page_number,
+            "chunk": retrieval.document
         })
 
     ####################################################################################################################################################
