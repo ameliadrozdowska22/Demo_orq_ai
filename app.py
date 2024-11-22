@@ -9,33 +9,36 @@ from streamlit import _bottom
 import base64
 
 
-# Set up page config
+# Set up the page configuration
 APP_TITLE = 'Orq.ai Chat'
 
 st.set_page_config(APP_TITLE, page_icon="📈", layout="wide")
 st.title(APP_TITLE)
 
-
-# Initialize session state variables if they don't exist
-
-
-if "file_uploaded" not in st.session_state:
+# Initialize session state variables
+if "file_uploaded" not in st.session_state: # Initialize the indicator of whether the file was uploaded
     st.session_state.file_uploaded = False
-if "uploaded_files" not in st.session_state:
-    st.session_state.uploaded_files = None
-if "uploaded_image" not in st.session_state:
+if "uploaded_file" not in st.session_state: # Initialize list with uploaded files
+    st.session_state.uploaded_file = None
+if "uploaded_image" not in st.session_state: # Initialize uploaded image
     st.session_state.uploaded_image = None
-if "file_ids" not in st.session_state:
-    st.session_state.file_ids = []
-if "variable_dict" not in st.session_state:  
+if "file_id" not in st.session_state: # Initialize list with file ids
+    st.session_state.file_id = []
+if "variable_dict" not in st.session_state: # Initialize variable dictionary
     st.session_state.variable_dict = {}
 if "messages" not in st.session_state: # Initialize chat history
     st.session_state.messages = []
-if "context_input_dict" not in st.session_state:
+if "context_input_dict" not in st.session_state: # Initialize context dictionary
     st.session_state.context_input_dict = {}
 
 
 def style():
+    """
+    This function sets the customized CSS styles of a title, regular expander and side-menu-expander.
+
+    Param: None
+    Return: None
+    """
 
     st.markdown(
     """
@@ -61,27 +64,21 @@ def style():
     )
 
     return
-
-
-def get_response(variable_dict, token, key, context, file_id, chat_input):
-    """
-    This function gets the response and displays it word by word
-    """
-    response, sources = generate_response(variable_dict, token, key, context, file_id, chat_input)
-
-    return response, sources
     
 
-
 def variable_textfields(variables):
-
+    """
+    This function creates a text fields for every variable in the given deployment and places user input, from text fields,
+    in the session with a corresponding key.
+    
+    Param: A list of variables
+    Return: None
+    """
     if len(variables)>0:
         st.markdown("<p style='font-weight: normal; font-size: 14px;'>Variables</p>", unsafe_allow_html=True)
     
     # creating a text field for every variable in the given deployment
     for index, variable in enumerate(variables):
-        if f"variable_disabled_{index}" not in st.session_state:
-            st.session_state[f"variable_disabled_{index}"] = False
 
         variable_input = st.text_input(
             "variable",
@@ -98,30 +95,42 @@ def variable_textfields(variables):
 
 
 def upload_file():
-
+    """
+    This function takes the uploaded file from the session, creates, and adds a list with its ID to the session (ID is later used for the deployment invoke).
+    
+    Param: None
+    Return: None
+    """
     file_uploaded_bool = st.session_state.file_uploaded
-    uploaded_files = st.session_state.uploaded_files
-    file_ids = st.session_state.file_ids
+    uploaded_file = st.session_state.uploaded_file
+    file_id = st.session_state.file_id
 
     if file_uploaded_bool:
-        for file in uploaded_files:
-            file_id = convert(file, st.session_state.get("token"))
-            file_ids.append(file_id)
+        file_id = [convert(uploaded_file, st.session_state.get("token"))]
+
+    st.session_state.file_id = file_id
 
     return
 
 
 def context_section():
-
+    """
+    This function creates a section with text fields representing keys and values in the context dictionary.
+    It creates the context dictionary based on user inputs and adds it to the session.
+    It creates buttons that show or hide context rows.
+    
+    Param: None
+    Return: None
+    """
     st.markdown("<p style='font-weight: normal; font-size: 14px;'>Context</p>", unsafe_allow_html=True)
     key_col, val_col, plus_col, min_col = st.columns([2, 2, 1, 1])
 
     context_input_dict = st.session_state.context_input_dict
 
-    # creating dynamicly initialized text fields for context
     if "context_rows" not in st.session_state:
         st.session_state.context_rows = [1]  # keeping track of context rows in the session
 
+    # creating dynamicly initialized text fields for context
     for i, unique_id in enumerate(st.session_state.context_rows):
 
         context_key_input = key_col.text_input(
@@ -140,6 +149,7 @@ def context_section():
             key=f"context_value_{unique_id}" # setting unique key due to streamlit rules
         )
 
+        # adding a user context inputs to the session
         if context_key_input:
             if context_value_input == '':
                 context_input_dict[context_key_input] = []
@@ -148,29 +158,38 @@ def context_section():
 
             st.session_state.context_input_dict = context_input_dict
 
+        # creating "+" buttons
         with plus_col:
-            if i == 0:
+            if i == 0: # only for the first row
                 add_button = st.button("➕", key=f"add_button_{unique_id}")
             
                 if add_button:
                     if len(st.session_state.context_rows) + 1 <= 10: # setting a limit of context rows to 10
-                        st.session_state.context_rows.append(len(st.session_state.context_rows) + 1) # adding a new unique_id
+                        st.session_state.context_rows.append(len(st.session_state.context_rows) + 1) # adding a new row with a unique id
                     else:
                         pass
 
+        # creating "-" buttons
         with min_col:
-            if i == 0:
+            if i == 0: # only for the first row
                 hide_button = st.button("➖", key=f"hide_button_{unique_id}")
 
                 if hide_button:
                     if len(st.session_state.context_rows) > 1:  # at least 1 row remains
-                        st.session_state.context_rows.pop()
+                        st.session_state.context_rows.pop() # removing the last row from the page
                         last_key = list(st.session_state.context_input_dict)[-1]
-                        st.session_state.context_input_dict.pop(last_key)
+                        st.session_state.context_input_dict.pop(last_key) # removing the value of the last row from the session
         
     return
 
+
 def image_uploader():
+    """
+    This function displays an image uploader, enclodes the uploaded immage with base 64 encoding, and adds it to the session in the URI format
+    
+    Param: None
+    Return: None
+    """
     # Accept a single file
     image = st.file_uploader("Upload an image", type=["PNG", "JPG", "JPEG"], label_visibility="collapsed", accept_multiple_files=False)
 
@@ -185,9 +204,15 @@ def image_uploader():
 
 def chat_layout(variables):
     """
-    This function arranges the chat layout and it manages chat history 
+    This function manages the chat section:
+    - chat message text field;
+    - the message history;
+    - the input from the image uploader;
+    - sources.
+    
+    Param: A list of variables
+    Return: None
     """
-
     chat_input = st.chat_input("Your question")
 
     with _bottom.expander("Upload image as an input"):
@@ -210,30 +235,29 @@ def chat_layout(variables):
         image = st.session_state.get("uploaded_image")
         
     try:
-        # if the token and key was set, display user input and the response
-
+        # check if the token, key and all variables were given by the user to procede with the invoke
         if token and key and chat_input and (len(variables) == len(variable_dict)):
             
             if st.session_state.file_uploaded:
                 upload_file()
 
-            file_ids = st.session_state.file_ids
+            file_id = st.session_state.file_id
 
+            # display the user text message
             with st.chat_message("user"):
                 st.markdown(chat_input)
 
             image_message = None
 
-            # Add user message to chat history
+            # Add the user message to the chat history
             if chat_input:
-                # Append text message
                 text_message = {
                     "role": "user",
                     "content": [{"type": "text", "text": chat_input}]
                 }
                 st.session_state.messages.append(text_message)
 
-                # Append each uploaded image as a separate message
+                # Append the uploaded image as a separate message
                 if image:
                     image_message = {
                         "role": "user",
@@ -241,12 +265,12 @@ def chat_layout(variables):
                     }
                     del st.session_state["uploaded_image"]
 
+            # limit the number of past messages given to the model for a reference
             conv_memory = []
             response = None
-
             messages = st.session_state.messages
 
-            history_num = 10 # number of maximum messages given to the model for a reference
+            history_num = 20 # number of maximum past messages given to the model !! CUSTOMIZE IF NEEDED !!
             if history_num < len(messages):
                 slicer = len(conv_memory) - history_num
                 conv_memory = messages[slicer:]
@@ -256,15 +280,12 @@ def chat_layout(variables):
             if image_message:
                 conv_memory.append(image_message)
 
-
+            # display the response and a source from a model
             with st.chat_message("assistant"):
                 try:
-                    
-                    response, sources = get_response(variable_dict, token, key, context, file_ids, conv_memory)
+                    response, sources = generate_response(variable_dict, token, key, context, file_id, conv_memory)
 
                     st.markdown(response)
-
-                    #####################################################################################################################
 
                     if sources:
                         with st.expander(label= "Sources", expanded=False, icon="📖"):
@@ -277,12 +298,10 @@ def chat_layout(variables):
                                 st.markdown(f"**{counter}. {file_name} - {page_number} page:**")
                                 st.markdown(chunk_text) 
 
-                    #####################################################################################################################
-
-                     # Append assistant response as a single text object
+                    # Append the model response in the message history
                     st.session_state.messages.append({
                         "role": "assistant",
-                        "content": [{"type": "text", "text": response}]  # content is a single dictionary
+                        "content": [{"type": "text", "text": response}]
                     })
 
                 except:
@@ -299,20 +318,26 @@ def chat_layout(variables):
 
 def additional_parameters_layout(variables):
     """
-    This function arranges the second part of the sidebar layout, it allows to dynamicly generate text fields for context key and value, it also sets the context dict in the session
+    This function arranges the layout of the second part of the sidebar and updates the uploaded files in the session.
+    
+    Param: A list of variables
+    Return: None
     """
-
     with st.sidebar.expander(label="Set additional parameters", expanded=True):
+        # display variable text fields
         variable_textfields(variables)
 
-        uploaded_files = st.file_uploader("Upload a file", type=["pdf", "txt", "docx", "csv", "xls"], accept_multiple_files=False)
+        # display the file uploader
+        uploaded_file = st.file_uploader("Upload a file", type=["pdf", "txt", "docx", "csv", "xls"], accept_multiple_files=False)
 
-        if st.session_state.uploaded_files != uploaded_files:
-            st.session_state.uploaded_files = uploaded_files
+        # update the uploaded files in the session
+        if st.session_state.uploaded_file != uploaded_file:
+            st.session_state.uploaded_file = uploaded_file
         
-        if uploaded_files:
+        if uploaded_file:
             st.session_state.file_uploaded = True
             
+        # display the context section
         context_section()
 
     return
@@ -320,13 +345,21 @@ def additional_parameters_layout(variables):
 
 def sidebar_layout():
     """
-    This function arranges sidebar layout, and sets the values of API token and deployment key in the session
+    This function arranges the sidebar layout.
+    It takes a list of user deployment keys, based on a given token, and puts it in the drop-down menu options.
+    It sets values of a given API token and a chosen deployment key in the session.
+    It also gets the list of variables of a chosen deployment.
+    It initializes the additioanal parameters layout and the chat layout if both the key and the token are given
+    
+    Param: None
+    Return: None
     """
-
+    # display the logo image
     st.sidebar.image("assets/orqai_logo.png", width=150)
 
     with st.sidebar.expander(label="Set parameters", expanded=True):
 
+        # create a text field for a user access Token
         with st.form("parameters", border=False):
 
             token_input = st.text_input(
@@ -336,6 +369,7 @@ def sidebar_layout():
                 placeholder="Access token"
             )
 
+            # get a list of user deployment keys, based on a given token and put it in the drop-down menu options
             if token_input:
                 try:
                     depl_list = get_deployments(token_input)
@@ -349,9 +383,11 @@ def sidebar_layout():
                         index=None
                     )
 
+                    # add a chosen deployment key to the session
                     if key_input:
                         key_input = key_input.replace(" ","_")
                         st.session_state["key"] = key_input
+
                 except:
                     st.info("Invalid or missing token. Please verify the token and try again.")
                 
@@ -360,11 +396,12 @@ def sidebar_layout():
     if set_button:
         st.session_state["token"] = token_input
 
-    # getting variables for a given deployment
+    # get the list of variables of a chosen deployment
     try:
         if key_input and token_input:
                 variables = list(get_variables(token_input, key_input))
 
+                # set the deployment key name as a page subtitle
                 CHAT_SUBTITLE = f"{key_input.
                             replace("-"," ")
                             .replace("_"," ")
@@ -372,6 +409,7 @@ def sidebar_layout():
                 
                 st.markdown(f"<p margin-top: 0px; margin-botton:0px; style='font-weight: 600; font-size: 22px; color:#BDBDC1;'>{CHAT_SUBTITLE}</p>", unsafe_allow_html=True)
 
+                # if the key and the token are given, initialize the additioanal parameters layout and the chat layout
                 additional_parameters_layout(variables)
                 chat_layout(variables) 
 
