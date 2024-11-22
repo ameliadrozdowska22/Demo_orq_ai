@@ -304,14 +304,16 @@ def chat_layout(variables):
                         "content": [{"type": "text", "text": response}]
                     })
 
-                except:
-                    pass
+                except Exception as e:
+                    print(e)
+                    # pass
 
         else:
             st.info('Please provide all the necessary parameters')
 
-    except:
-        pass
+    except Exception as e:
+        print(e)
+        # pass
 
     return
 
