@@ -35,12 +35,14 @@ def generate_response(variable_dict, api_token, key_input, context_input, file_i
 
     sources = []
 
-    for retrieval in generation.retrievals:
-        sources.append({
-            "file_name": retrieval.metadata.file_name,
-            "page_number": retrieval.metadata.page_number,
-            "chunk": retrieval.document
-        })
+    if generation.retrievals:
+
+        for retrieval in generation.retrievals:
+            sources.append({
+                "file_name": retrieval.metadata.file_name,
+                "page_number": retrieval.metadata.page_number,
+                "chunk": retrieval.document
+            })
 
     ####################################################################################################################################################
 
@@ -119,7 +121,11 @@ def get_deployments(api_token):
         'Authorization': f'Bearer {api_token}'
     }
 
-    response = requests.get('https://my.orq.ai/v2/deployments', headers=headers)
+    params = {
+        "limit": 50
+    }
+
+    response = requests.get('https://my.orq.ai/v2/deployments', headers=headers, params=params)
 
     result = response.json()
     json.dumps(result, indent=4)

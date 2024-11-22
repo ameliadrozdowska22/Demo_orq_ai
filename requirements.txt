@@ -17,7 +17,11 @@ cycler==0.12.1
 debugpy==1.8.7
 decorator==5.1.1
 deprecation==2.1.0
+<<<<<<< HEAD
 Django==5.0.9
+=======
+Django>=5.0.6
+>>>>>>> f31f932 (increased the  deployment key retrieval limit)
 et-xmlfile==1.1.0
 executing==2.1.0
 filelock==3.14.0

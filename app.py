@@ -18,8 +18,7 @@ st.title(APP_TITLE)
 
 # Initialize session state variables if they don't exist
 
-# if "file_id" not in st.session_state:
-#     st.session_state.file_id = None
+
 if "file_uploaded" not in st.session_state:
     st.session_state.file_uploaded = False
 if "uploaded_files" not in st.session_state:
@@ -267,10 +266,8 @@ def chat_layout(variables):
 
                     #####################################################################################################################
 
-                    with st.expander(label= "Sources", expanded=False, icon="📖"):
-                        if not sources:
-                            st.text("No sources available.")
-                        else:
+                    if sources:
+                        with st.expander(label= "Sources", expanded=False, icon="📖"):
                             counter = 0
                             for source in sources:
                                 counter += 1
@@ -342,6 +339,7 @@ def sidebar_layout():
             if token_input:
                 try:
                     depl_list = get_deployments(token_input)
+                    depl_list.sort()
                     key_input = st.selectbox(
                         "Deployment key",
                         options= [i.replace("_", " ") for i in depl_list],
@@ -381,7 +379,6 @@ def sidebar_layout():
         pass
 
     return
-
 
 
 if __name__ == "__main__":
