@@ -84,8 +84,9 @@ def chat_layout(variables):
 
             # display the response and a source from a model
             with st.chat_message("assistant"):
+                context = {key: value.lower() if isinstance(value, str) else value for key, value in variable_dict.items()}
                 try:
-                    response, sources = generate_response(variable_dict = variable_dict, api_token = token, key_input = key, conv_memory= conv_memory , context_input = None, file_id = None)
+                    response, sources = generate_response(variable_dict = variable_dict, api_token = token, key_input = key , context_input = context, file_id = None, conv_memory= conv_memory)
 
                     st.markdown(response)
 
@@ -121,7 +122,6 @@ def show():
             disabled=False,
             placeholder="Access token"
         )
-
         
         if token:
             st.session_state["token"] = token
@@ -130,6 +130,7 @@ def show():
             try:
                 variables = list(get_variables(token, key))
                 variable_textfields(variables)
+
             except OrqAIException:
                 st.info('Please verify if this token has an access to "orquesta-demos" workspace')
     

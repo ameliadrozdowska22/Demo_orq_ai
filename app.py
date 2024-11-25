@@ -92,5 +92,5 @@ elif st.session_state.current_page == "Chat Demployment":
     st.session_state.key = "ChatDemo"
     chatDemo.show()
 elif st.session_state.current_page == "Translator Deployment":
-    st.session_state.key = "translator-example"
+    st.session_state.key = "translator-streamlit-demo"
     translatorDemo.show()

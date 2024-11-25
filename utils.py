@@ -114,7 +114,7 @@ def get_variables(api_token, key_input):
     # Customized solely for the steel catalog deployment
     if key_input == "steel_catalog_RAG":
         variables_all_2 = [variable for variable in variables_all if variable != "steel_catalog"]
-    elif key_input == "translator-example":
+    elif key_input == "translator-streamlit-demo":
         variables_all_2 = [variable for variable in variables_all if variable != "sourcetext"]
     else:
         variables_all_2 = variables_all
