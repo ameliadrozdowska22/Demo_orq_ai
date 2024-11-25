@@ -8,3 +8,7 @@ base = "light"
 
 [server]
 maxUploadSize = 10
+headless = true
+
+[client]
+hideSidebarNav = true

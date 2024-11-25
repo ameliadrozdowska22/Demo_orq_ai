@@ -112,7 +112,12 @@ def get_variables(api_token, key_input):
             variables_all = variables_all + variables
 
     # Customized solely for the steel catalog deployment
-    variables_all_2 = [variable for variable in variables_all if variable != "steel_catalog"]
+    if key_input == "steel_catalog_RAG":
+        variables_all_2 = [variable for variable in variables_all if variable != "steel_catalog"]
+    elif key_input == "translator-example":
+        variables_all_2 = [variable for variable in variables_all if variable != "sourcetext"]
+    else:
+        variables_all_2 = variables_all
 
     variables_set = set([variable.strip() for variable in variables_all_2])
 
@@ -171,6 +176,8 @@ def get_deployments(api_token):
 
     result = response.json()
     json.dumps(result, indent=4)
+
+    print(result)
 
     depl_key_list = []
 
