@@ -22,8 +22,10 @@ def variable_textfields(variables):
     # creating a text field for every variable in the given deployment
     for index, variable in enumerate(variables):
 
-        variable_input = st.text_input(
-            "variable",
+        variable_input = st.selectbox(
+            options=["English", "Dutch", "German", "French", "Spanish"],
+            label="variables",
+            index=None,
             label_visibility="collapsed",
             disabled=False,
             placeholder=f"{variable.replace("_"," ").capitalize()}",
