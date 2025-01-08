@@ -109,7 +109,7 @@ def chat_layout():
                     })
 
                 except OrqAIException:
-                    st.info('Please verify if this token has an access to "orquesta-demos" workspace')
+                    st.info('Please verify if this token has an access to the correct workspace')
 
                 except Exception as e:
                     print(e)

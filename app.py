@@ -1,5 +1,5 @@
 import streamlit as st
-from subpages import generalDemo, chatDemo, translatorDemo 
+from subpages import generalDemo, chatDemo, translatorDemo, midasChatDemo
 
 APP_TITLE = 'Orq.ai Chat'
 st.set_page_config(APP_TITLE, page_icon="📈", layout="wide")
@@ -70,7 +70,7 @@ st.title(APP_TITLE)
 style()
 
 with st.sidebar:
-    useCase = st.selectbox("Chose an use case", options=["General", "Chat Demployment","Translator Deployment"], index=None)
+    useCase = st.selectbox("Chose an use case", options=["General", "Chat Demployment","Translator Deployment", "Midas Chat"], index=None)
 
     if useCase == "General":
         page = "General"
@@ -84,6 +84,10 @@ with st.sidebar:
         page = "Translator Deployment"
         navigate_to(page)
 
+    if useCase == "Midas Chat":
+        page = "Midas Chat"
+        navigate_to(page)
+
 
 # Dynamically render content
 if st.session_state.current_page == "General":
@@ -94,3 +98,6 @@ elif st.session_state.current_page == "Chat Demployment":
 elif st.session_state.current_page == "Translator Deployment":
     st.session_state.key = "translator-streamlit-demo"
     translatorDemo.show()
+elif st.session_state.current_page == "Midas Chat":
+    st.session_state.key = "chatbot_example"
+    midasChatDemo.show()
