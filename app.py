@@ -4,7 +4,7 @@ from subpages import generalDemo, chatDemo, translatorDemo, midasChatDemo
 APP_TITLE = 'Orq.ai Chat'
 st.set_page_config(APP_TITLE, page_icon="📈", layout="wide")
 
-st.sidebar.image("assets/orqai_logo.png", width=150)
+st.sidebar.image("assets/orq_logo.png", width=110)
 
 # Initialize session state variables
 if "file_uploaded" not in st.session_state: # Initialize the indicator of whether the file was uploaded
