@@ -1,12 +1,18 @@
 import streamlit as st
-from utils import generate_response, get_variables, convert, get_deployments
+from utils import generate_response, get_variables
 import time
-import base64
+import json
+import base64 
 from typing import Optional
-from orq_ai_sdk import OrqAI    
-from orq_ai_sdk.exceptions import OrqAIException
+from orq_ai_sdk import Orq
+from orq_ai_sdk.models import APIError
 from streamlit import _bottom
 import base64
+
+def clear_history(reset_col):
+    if reset_col.button("Reset Chat", key="reset_button"):
+        st.session_state.messages = []  # Clear the chat history immediately
+        st.rerun()  # Force the app to rerun
 
 def variable_textfields(variables):
     """
@@ -39,8 +45,20 @@ def variable_textfields(variables):
 
 
 def chat_layout(variables):
+    """
+    This function manages the chat section:
+    - chat message text field;
+    - the message history;
     
-    chat_input = st.chat_input("Source text")
+    Param: A list of variables
+    Return: None
+    """
+
+    chat_col, reset_col = st._bottom.columns([7.7, 1])
+
+    chat_input = chat_col.chat_input("Source text")
+
+    clear_history(reset_col)
 
     # Display chat messages from history on app rerun
     for message in st.session_state.messages:
@@ -98,9 +116,10 @@ def chat_layout(variables):
                         "content": [{"type": "text", "text": response}]
                     })
 
-                except Exception as e:
-                    print(e)
-                    # pass
+                except APIError as e:
+                    error_dict = json.loads(e.body)
+                    st.info(error_dict["error"])
+                    # st.info(e)
 
         else:
             st.info('Please provide all the necessary parameters')
@@ -133,8 +152,10 @@ def show():
                 variables = list(get_variables(token, key))
                 variable_textfields(variables)
 
-            except OrqAIException:
-                st.info('Please verify if this token has an access to "orquesta-demos" workspace')
+            except APIError as e:
+                    print(e)
+                    # st.info(e)
+                    st.info('Please verify if this token has an access to "orquesta-demos" workspace')
     
     if variables:
         chat_layout(variables) 

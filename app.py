@@ -70,14 +70,14 @@ st.title(APP_TITLE)
 style()
 
 with st.sidebar:
-    useCase = st.selectbox("Chose an use case", options=["General", "Chat Demployment","Translator Deployment", "Midas Chat"], index=None)
+    useCase = st.selectbox("Chose the use case", options=["General", "Chat Deployment","Translator Deployment", "Midas Chat"], index=None)
 
     if useCase == "General":
         page = "General"
         navigate_to(page)
 
-    if useCase == "Chat Demployment":
-        page = "Chat Demployment"
+    if useCase == "Chat Deployment":
+        page = "Chat Deployment"
         navigate_to(page)
 
     if useCase == "Translator Deployment":
@@ -92,7 +92,7 @@ with st.sidebar:
 # Dynamically render content
 if st.session_state.current_page == "General":
     generalDemo.show()
-elif st.session_state.current_page == "Chat Demployment":
+elif st.session_state.current_page == "Chat Deployment":
     st.session_state.key = "ChatDemo"
     chatDemo.show()
 elif st.session_state.current_page == "Translator Deployment":

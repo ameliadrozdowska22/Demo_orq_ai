@@ -1,8 +1,15 @@
 import streamlit as st
 from streamlit import _bottom
 import base64
-from utils import generate_response
-from orq_ai_sdk.exceptions import OrqAIException
+from utils import generate_response, get_variables
+from orq_ai_sdk.models import APIError
+import json
+
+
+def clear_history(reset_col):
+    if reset_col.button("Reset Chat", key="reset_button"):
+        st.session_state.messages = []  # Clear the chat history immediately
+        st.rerun()  # Force the app to rerun
 
 
 def image_uploader():
@@ -24,11 +31,24 @@ def image_uploader():
 
 def chat_layout():
     """
+    This function manages the chat section:
+    - chat message text field;
+    - the message history;
+    - the input from the image uploader;
+    - sources.
+    
+    Param: A list of variables
+    Return: None
     """
-    chat_input = st.chat_input("Your question")
+
+    chat_col, reset_col = st._bottom.columns([7.7, 1])
+
+    chat_input = chat_col.chat_input("Your question")
 
     with _bottom.expander("Upload image as an input"):
         image_uploader()
+
+    clear_history(reset_col)
 
     # Display chat messages from history on app rerun
     for message in st.session_state.messages:
@@ -86,7 +106,7 @@ def chat_layout():
             # display the response and a source from a model
             with st.chat_message("assistant"):
                 try:
-                    print(conv_memory)
+                    # print(conv_memory)
                     response, sources = generate_response(api_token = token, key_input = key, conv_memory= conv_memory , variable_dict = None, context_input = None, file_id = None)
 
                     st.markdown(response)
@@ -108,8 +128,10 @@ def chat_layout():
                         "content": [{"type": "text", "text": response}]
                     })
 
-                except OrqAIException:
-                    st.info('Please verify if this token has an access to "orquesta-demos" workspace')
+                # except APIError:
+                except APIError as e:
+                    error_dict = json.loads(e.body)
+                    st.info(error_dict["error"])
 
                 except Exception as e:
                     print(e)
@@ -126,6 +148,8 @@ def show():
     token = None
     Key = None
 
+    correct_token = False
+
     with st.sidebar:
 
         token = st.text_input(
@@ -139,5 +163,12 @@ def show():
             st.session_state["token"] = token
             key = st.session_state.get("key")
 
-    if token and key:
+            try:
+                variables = list(get_variables(token, key))
+                correct_token = True
+            
+            except APIError as e:
+                st.info('Please verify if this token has an access to "orquesta-demos" workspace')
+
+    if token and key and correct_token:
         chat_layout()

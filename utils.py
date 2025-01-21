@@ -1,5 +1,5 @@
 import os
-from orq_ai_sdk import OrqAI
+from orq_ai_sdk import Orq
 import json
 import streamlit as st
 import re
@@ -25,9 +25,8 @@ def generate_response(variable_dict, api_token, key_input, context_input, file_i
     if not file_id:
         file_id = None
     
-    client = OrqAI(
-        api_key=api_token,
-        environment="production"
+    client = Orq(
+        api_key=api_token
     )
 
     generation = client.deployments.invoke(
@@ -69,10 +68,11 @@ def get_dep_config(api_token, key_input):
     Return: 
         - Dict[] - deployment configuration 
     """
-    client = OrqAI(
-        api_key=api_token,
-        environment="production"
+    client = Orq(
+        api_key=api_token
     )
+
+    print(client)
 
     prompt_config = client.deployments.get_config(
         key=key_input,
@@ -83,7 +83,8 @@ def get_dep_config(api_token, key_input):
         }
     )
 
-    return prompt_config.to_dict()
+    # return prompt_config.to_dict()
+    return prompt_config.__dict__
 
 
 def get_variables(api_token, key_input):
@@ -99,13 +100,17 @@ def get_variables(api_token, key_input):
     """
     configuration = get_dep_config(api_token, key_input)
 
+    # print(configuration)
+
     variables_all = []
     
     messages = configuration["messages"]
 
+    print(messages)
+
     for message in messages:
-        if message['role'] != 'user': # ignore variables stated in user massages cause we overite it anyway 
-            content = message["content"]
+        if message.role != 'user': # ignore variables stated in user massages cause we overite it anyway 
+            content = message.content
 
             variables = re.findall(r'\{\{(.*?)\}\}', content) # extract all substrings in {{x}} brackets
 
@@ -177,7 +182,7 @@ def get_deployments(api_token):
     result = response.json()
     json.dumps(result, indent=4)
 
-    print(result)
+    # print(result)
 
     depl_key_list = []
 

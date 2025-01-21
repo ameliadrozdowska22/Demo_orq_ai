@@ -1,12 +1,19 @@
 import streamlit as st
 from utils import generate_response, get_variables, convert, get_deployments
 import time
+import json
 import base64
 from typing import Optional
-from orq_ai_sdk import OrqAI    
-from orq_ai_sdk.exceptions import OrqAIException
+from orq_ai_sdk import Orq
+from orq_ai_sdk.models import APIError
 from streamlit import _bottom
 import base64
+
+
+def clear_history(reset_col):
+    if reset_col.button("Reset Chat", key="reset_button"):
+        st.session_state.messages = []  # Clear the chat history immediately
+        st.rerun()  # Force the app to rerun
 
 
 def variable_textfields(variables):
@@ -156,10 +163,15 @@ def chat_layout(variables):
     Param: A list of variables
     Return: None
     """
-    chat_input = st.chat_input("Your question")
+
+    chat_col, reset_col = st._bottom.columns([7.7, 1])
+
+    chat_input = chat_col.chat_input("Your question")
 
     with _bottom.expander("Upload image as an input"):
         image_uploader()
+
+    clear_history(reset_col)
 
     # Display chat messages from history on app rerun
     for message in st.session_state.messages:
@@ -189,6 +201,7 @@ def chat_layout(variables):
             # display the user text message
             with st.chat_message("user"):
                 st.markdown(chat_input)
+
 
             image_message = None
 
@@ -246,6 +259,11 @@ def chat_layout(variables):
                         "role": "assistant",
                         "content": [{"type": "text", "text": response}]
                     })
+
+                except APIError as e:
+                    error_dict = json.loads(e.body)
+                    st.info(error_dict["error"])
+                    # pass
 
                 except Exception as e:
                     print(e)
@@ -342,7 +360,9 @@ def sidebar_layout():
     # get the list of variables of a chosen deployment
     try:
         if key_input and token_input:
+                
                 variables = list(get_variables(token_input, key_input))
+                print(f"variables{variables}")
 
                 # set the deployment key name as a page subtitle
                 CHAT_SUBTITLE = f"{key_input.
@@ -354,7 +374,7 @@ def sidebar_layout():
 
                 # if the key and the token are given, initialize the additioanal parameters layout and the chat layout
                 additional_parameters_layout(variables)
-                chat_layout(variables) 
+                chat_layout(variables)
 
     except:
         pass
