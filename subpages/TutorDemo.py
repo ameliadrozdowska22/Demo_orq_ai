@@ -109,7 +109,7 @@ def chat_layout():
                                 file_name = source["file_name"]
                                 page_number = source["page_number"]
                                 chunk_text = source["chunk"]
-                                st.markdown(f"**{counter}. {file_name} - page {page_number}:**")
+                                st.markdown(f"**{counter}. {file_name} - page {int(page_number)}:**")
                                 st.markdown(chunk_text) 
 
                     # Append the model response in the message history
