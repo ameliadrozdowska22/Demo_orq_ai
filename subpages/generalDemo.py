@@ -4,7 +4,6 @@ import time
 import json
 import base64
 from typing import Optional
-from orq_ai_sdk import Orq
 from orq_ai_sdk.models import APIError
 from streamlit import _bottom
 import base64
@@ -362,7 +361,6 @@ def sidebar_layout():
         if key_input and token_input:
                 
                 variables = list(get_variables(token_input, key_input))
-                print(f"variables{variables}")
 
                 # set the deployment key name as a page subtitle
                 CHAT_SUBTITLE = f"{key_input.

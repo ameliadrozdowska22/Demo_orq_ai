@@ -1,4 +1,5 @@
 import os
+import orq_ai_sdk
 from orq_ai_sdk import Orq
 import json
 import streamlit as st
@@ -72,8 +73,6 @@ def get_dep_config(api_token, key_input):
         api_key=api_token
     )
 
-    print(client)
-
     prompt_config = client.deployments.get_config(
         key=key_input,
         context={},
@@ -100,13 +99,9 @@ def get_variables(api_token, key_input):
     """
     configuration = get_dep_config(api_token, key_input)
 
-    # print(configuration)
-
     variables_all = []
     
     messages = configuration["messages"]
-
-    print(messages)
 
     for message in messages:
         if message.role != 'user': # ignore variables stated in user massages cause we overite it anyway 
@@ -121,6 +116,8 @@ def get_variables(api_token, key_input):
         variables_all_2 = [variable for variable in variables_all if variable != "steel_catalog"]
     elif key_input == "translator-streamlit-demo":
         variables_all_2 = [variable for variable in variables_all if variable != "sourcetext"]
+    elif key_input == "automatic_examination_check":
+        variables_all_2 = [variable for variable in variables_all if (variable != "Exam_Questions" and variable != "Student_Answers")]
     else:
         variables_all_2 = variables_all
 
@@ -181,8 +178,6 @@ def get_deployments(api_token):
 
     result = response.json()
     json.dumps(result, indent=4)
-
-    # print(result)
 
     depl_key_list = []
 

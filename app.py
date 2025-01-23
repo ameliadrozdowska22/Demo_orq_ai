@@ -1,5 +1,5 @@
 import streamlit as st
-from subpages import generalDemo, chatDemo, translatorDemo, midasChatDemo
+from subpages import generalDemo, chatDemo, translatorDemo, midasChatDemo, TutorDemo, ExamCheckerDemo
 
 APP_TITLE = 'Orq.ai Chat'
 st.set_page_config(APP_TITLE, page_icon="📈", layout="wide")
@@ -70,7 +70,7 @@ st.title(APP_TITLE)
 style()
 
 with st.sidebar:
-    useCase = st.selectbox("Chose the use case", options=["General", "Chat Deployment","Translator Deployment", "Midas Chat"], index=None)
+    useCase = st.selectbox("Chose the use case", options=["General", "Chat Deployment","Translator Deployment", "Law Tutor Chat", "Examination Checker", "Midas Chat"], index=None)
 
     if useCase == "General":
         page = "General"
@@ -88,6 +88,14 @@ with st.sidebar:
         page = "Midas Chat"
         navigate_to(page)
 
+    if useCase == "Law Tutor Chat":
+        page = "Law Tutor Chat"
+        navigate_to(page)
+
+    if useCase == "Examination Checker":
+        page = "Examination Checker"
+        navigate_to(page)
+
 
 # Dynamically render content
 if st.session_state.current_page == "General":
@@ -101,3 +109,9 @@ elif st.session_state.current_page == "Translator Deployment":
 elif st.session_state.current_page == "Midas Chat":
     st.session_state.key = "chatbot_example"
     midasChatDemo.show()
+elif st.session_state.current_page == "Law Tutor Chat":
+    st.session_state.key = "law-tutor"
+    TutorDemo.show()
+elif st.session_state.current_page == "Examination Checker":
+    st.session_state.key = "automatic_examination_check"
+    ExamCheckerDemo.show()
