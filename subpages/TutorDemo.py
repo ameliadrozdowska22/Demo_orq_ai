@@ -97,7 +97,7 @@ def chat_layout():
             # display the response and a source from a model
             with st.chat_message("assistant"):
                 try:
-                    response, sources = generate_response(api_token = token, key_input = key, conv_memory= conv_memory , variable_dict = None, context_input = None, file_id = file_id)
+                    response, sources, trace_id = generate_response(api_token = token, key_input = key, conv_memory= conv_memory , variable_dict = None, context_input = None, file_id = file_id)
 
                     st.markdown(response)
 

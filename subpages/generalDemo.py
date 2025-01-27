@@ -1,5 +1,5 @@
 import streamlit as st
-from utils import generate_response, get_variables, convert, get_deployments
+from utils import generate_response, get_variables, convert, get_deployments, set_feedback
 import time
 import json
 import base64
@@ -7,6 +7,25 @@ from typing import Optional
 from orq_ai_sdk.models import APIError
 from streamlit import _bottom
 import base64
+
+
+def give_feedback(api_token, trace_id):
+    
+    # Render the feedback widget with a dynamic key
+    selected = st.feedback("thumbs", key=f"feedback-{st.session_state.feedback_widget_key}")
+
+    if selected is not None:
+        st.session_state.feedback = selected
+    
+    feedback = st.session_state.feedback
+    if feedback is not None:
+        if feedback == 0:
+            set_feedback("bad", api_token, trace_id)
+
+        elif feedback == 1:
+            set_feedback("good", api_token, trace_id)
+
+    return
 
 
 def clear_history(reset_col):
@@ -163,7 +182,7 @@ def chat_layout(variables):
     Return: None
     """
 
-    chat_col, reset_col = st._bottom.columns([7.7, 1])
+    chat_col, reset_col = st._bottom.columns([7, 1])
 
     chat_input = chat_col.chat_input("Your question")
 
@@ -238,9 +257,15 @@ def chat_layout(variables):
             # display the response and a source from a model
             with st.chat_message("assistant"):
                 try:
-                    response, sources = generate_response(variable_dict, token, key, context, file_id, conv_memory)
+                    response, sources, trace_id = generate_response(variable_dict, token, key, context, file_id, conv_memory)
 
                     st.markdown(response)
+
+                    # reset the feedback state
+                    st.session_state.give_feedback = True
+                    st.session_state.feedback = None
+                    st.session_state.feedback_widget_key += 1
+                    st.session_state.trace_id = trace_id
 
                     if sources:
                         with st.expander(label= "Sources", expanded=False, icon="📖"):
@@ -250,7 +275,7 @@ def chat_layout(variables):
                                 file_name = source["file_name"]
                                 page_number = source["page_number"]
                                 chunk_text = source["chunk"]
-                                st.markdown(f"**{counter}. {file_name} - page {page_number}:**")
+                                st.markdown(f"**{counter}. {file_name} - page {int(page_number)}:**")
                                 st.markdown(chunk_text) 
 
                     # Append the model response in the message history
@@ -270,6 +295,17 @@ def chat_layout(variables):
 
         else:
             st.info('Please provide all the necessary parameters')
+
+    except Exception as e:
+        print(e)
+        # pass
+
+    # display feedback buttons
+    try:
+        if st.session_state.give_feedback == True:
+            token = st.session_state.get("token")
+            trace_id = st.session_state.get("trace_id")
+            give_feedback(token, trace_id)
 
     except Exception as e:
         print(e)

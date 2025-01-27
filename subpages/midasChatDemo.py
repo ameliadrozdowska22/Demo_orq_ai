@@ -104,7 +104,7 @@ def chat_layout():
             with st.chat_message("assistant"):
                 try:
                     # print(conv_memory)
-                    response, sources = generate_response(api_token = token, key_input = key, conv_memory= conv_memory , variable_dict = None, context_input = None, file_id = None)
+                    response, sources, trace_id = generate_response(api_token = token, key_input = key, conv_memory= conv_memory , variable_dict = None, context_input = None, file_id = None)
 
                     st.markdown(response)
 
@@ -116,7 +116,7 @@ def chat_layout():
                                 file_name = source["file_name"]
                                 page_number = source["page_number"]
                                 chunk_text = source["chunk"]
-                                st.markdown(f"**{counter}. {file_name} - page {page_number}:**")
+                                st.markdown(f"**{counter}. {file_name} - page {int(page_number)}:**")
                                 st.markdown(chunk_text) 
 
                     # Append the model response in the message history

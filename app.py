@@ -25,6 +25,15 @@ if "key" not in st.session_state:
     st.session_state.key = None
 if "current_page" not in st.session_state:
     st.session_state.current_page = "Main"
+if "feedback" not in st.session_state: # Initialize the feedback value
+    st.session_state.feedback = None
+if "give_feedback" not in st.session_state: # Initialize the feedback state (shown/ not shown)
+   st.session_state.give_feedback = False
+if "feedback_widget_key" not in st.session_state: # Dynamically update the feedback widget's key for resetting
+    st.session_state.feedback_widget_key = 0
+if "trace_id" not in st.session_state:
+    st.session_state.trace_id = 0
+
 
 def navigate_to(page):
     if st.session_state.current_page != page:
@@ -57,8 +66,7 @@ def style():
             font-size: 1.3rem;
             font-weight: 600;
         }
-
-    </style>
+        </style>
     """,
     unsafe_allow_html=True
     )

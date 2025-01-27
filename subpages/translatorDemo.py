@@ -105,7 +105,7 @@ def chat_layout(variables):
             with st.chat_message("assistant"):
                 context = {key: value.lower() if isinstance(value, str) else value for key, value in variable_dict.items()}
                 try:
-                    response, sources = generate_response(variable_dict = variable_dict, api_token = token, key_input = key , context_input = context, file_id = None, conv_memory= conv_memory)
+                    response, sources, trace_id = generate_response(variable_dict = variable_dict, api_token = token, key_input = key , context_input = context, file_id = None, conv_memory= conv_memory)
 
                     st.markdown(response)
 

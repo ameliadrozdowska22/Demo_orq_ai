@@ -45,6 +45,8 @@ def generate_response(variable_dict, api_token, key_input, context_input, file_i
     # extracting the text from the generation
     response = generation.choices[0].message.content
 
+    trace_id = generation.id
+
     # collecting the sources' information from generation retrievals
     sources = []
     if generation.retrievals:
@@ -55,7 +57,7 @@ def generate_response(variable_dict, api_token, key_input, context_input, file_i
                 "chunk": retrieval.document
             })
 
-    return response, sources
+    return response, sources, trace_id
 
 
 def get_dep_config(api_token, key_input):
@@ -186,4 +188,29 @@ def get_deployments(api_token):
         depl_key_list.append(deployment_name)
 
     return depl_key_list
+
+
+def set_feedback(feedback, api_token, trace_id):
+    try:
+        payload = {
+            "property": "rating",
+            "value": feedback,
+            "trace_id": trace_id
+        }
+        headers = {
+            "accept": "application/json",
+            "content-type": "application/json",
+            'authorization': f'Bearer {api_token}'
+        }
+
+        response = requests.post("https://api.orq.ai/v2/feedback", json=payload, headers=headers)
+
+        print(f'response = {response.text}')
+        print(trace_id)
+        print(feedback)
+
+    except Exception as e:
+        print(e)
+
+    return
 
