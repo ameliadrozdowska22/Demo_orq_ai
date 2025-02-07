@@ -209,7 +209,7 @@ def chat_layout(variables):
         
     try:
         # check if the token, key and all variables were given by the user to procede with the invoke
-        if token and key and chat_input and (len(variables) == len(variable_dict)):
+        if token and key and chat_input:
             
             if st.session_state.file_uploaded:
                 upload_file()
@@ -290,15 +290,15 @@ def chat_layout(variables):
                     # pass
 
                 except Exception as e:
-                    print(e)
-                    # pass
+                    # print(e)
+                    pass
 
         else:
             st.info('Please provide all the necessary parameters')
 
     except Exception as e:
-        print(e)
-        # pass
+        # print(e)
+        pass
 
     # display feedback buttons
     try:
@@ -308,8 +308,8 @@ def chat_layout(variables):
             give_feedback(token, trace_id)
 
     except Exception as e:
-        print(e)
-        # pass
+        # print(e)
+        pass
 
     return
 

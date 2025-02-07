@@ -34,9 +34,6 @@ def generate_response(variable_dict, api_token, key_input, context_input, file_i
         key=key_input,
         context=context_input,
         inputs=variable_dict,
-        metadata={
-            "custom-field-name": "custom-metadata-value"
-        },
         messages= conv_memory,
         file_ids=file_id,
         invoke_options={"include_retrievals": True}
