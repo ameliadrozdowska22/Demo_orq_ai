@@ -116,6 +116,8 @@ def get_variables(api_token, key_input):
     # Customized solely for the steel catalog deployment
     if key_input == "steel_catalog_RAG":
         variables_all_2 = [variable for variable in variables_all if variable != "steel_catalog"]
+    elif key_input == "ChatDemo":
+        variables_all_2 = [variable for variable in variables_all if variable != "EU_AI_ACT"]
     elif key_input == "translator-streamlit-demo":
         variables_all_2 = [variable for variable in variables_all if variable != "sourcetext"]
     elif key_input == "automatic_examination_check":
@@ -203,14 +205,34 @@ def set_feedback(feedback, api_token, trace_id):
             'authorization': f'Bearer {api_token}'
         }
 
+        print("test_api")
+
         response = requests.post("https://api.orq.ai/v2/feedback", json=payload, headers=headers)
 
-        print(f'response = {response.text}')
-        print(trace_id)
-        print(feedback)
+        print(response)
 
     except Exception as e:
         print(e)
 
     return
 
+
+def post_correction(user_correction, api_token, trace_id):
+    try:
+        payload = {
+            "property": "correction",
+            "value": user_correction,
+            "trace_id": trace_id
+        }
+        headers = {
+            "accept": "application/json",
+            "content-type": "application/json",
+            'authorization': f'Bearer {api_token}'
+        }
+
+        response = requests.post("https://api.orq.ai/v2/feedback", json=payload, headers=headers)
+
+    except Exception as e:
+        print(e)
+
+    return

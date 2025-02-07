@@ -1,5 +1,5 @@
 import streamlit as st
-from utils import generate_response, get_variables
+from utils import generate_response, get_variables, set_feedback, post_correction
 import time
 import json
 import base64 
@@ -7,6 +7,62 @@ from typing import Optional
 from orq_ai_sdk.models import APIError
 from streamlit import _bottom
 import base64
+
+def give_feedback(api_token, trace_id, feedback_col):
+    
+    # Render the feedback widget with a dynamic key
+    with feedback_col:
+        selected = st.feedback("thumbs", key=f"feedback-{st.session_state.feedback_widget_key}")
+
+    if selected is not None:
+        st.session_state.feedback = selected
+    
+    feedback = st.session_state.feedback
+    if feedback is not None:
+        if feedback == 0:
+            set_feedback("bad", api_token, trace_id)
+
+        elif feedback == 1:
+            set_feedback("good", api_token, trace_id)
+
+    return
+
+
+def add_correction(api_token, trace_id, correction_col):
+
+    # Create pills for adding correction
+    correction_selected = correction_col.pills(
+        label="Add correction",
+        key=f"correction_button-{st.session_state.correction_widget_key}",
+        options="Add correction",
+        selection_mode="single",
+        default=None,
+        label_visibility="collapsed"
+    )
+
+    if correction_selected:
+        # Use form to capture user input on Enter or Submit
+        with st.form(key=f"correction_form-{st.session_state.correction_widget_key}"):
+            user_correction = st.text_area(
+                label="Enter your correction",
+                height=None,
+                max_chars=None,
+                key=f"correction-{st.session_state.correction_widget_key}",
+                placeholder="Enter your correction here...",
+                label_visibility="collapsed"
+            )
+
+            # Submit button inside form
+            submitted = st.form_submit_button("Submit Correction")
+
+            if submitted and user_correction:
+                print(user_correction)
+                post_correction(user_correction, api_token, trace_id)
+
+                # Reset input field after submission
+                st.session_state.correction_widget_key += 1
+
+    return
 
 def clear_history(reset_col):
     if reset_col.button("Reset Chat", key="reset_button"):
@@ -107,6 +163,16 @@ def chat_layout(variables):
                 try:
                     response, sources, trace_id = generate_response(variable_dict = variable_dict, api_token = token, key_input = key , context_input = context, file_id = None, conv_memory= conv_memory)
 
+                    # reset the feedback state
+                    st.session_state.give_feedback = True
+                    st.session_state.feedback = None
+                    st.session_state.feedback_widget_key += 1
+                    st.session_state.trace_id = trace_id
+
+                    # reset the correction state
+                    st.session_state.give_correction = True
+                    st.session_state.correction_widget_key += 1
+
                     st.markdown(response)
 
                     # Append the model response in the message history
@@ -124,11 +190,28 @@ def chat_layout(variables):
             st.info('Please provide all the necessary parameters')
 
     except Exception as e:
+        # print(e)
+        pass
+
+    # display feedback and correction buttons
+    try:
+        correction_col, feedback_col, empty_col = st.columns([2, 1, 12])
+        if st.session_state.give_feedback == True:
+            token = st.session_state.get("token")
+            trace_id = st.session_state.get("trace_id")
+            give_feedback(token, trace_id, feedback_col)
+
+        if st.session_state.give_correction == True:
+            token = st.session_state.get("token")
+            trace_id = st.session_state.get("trace_id")
+            add_correction(token, trace_id, correction_col)
+
+
+    except Exception as e:
         print(e)
         # pass
 
     return
-
 
 
 def show():
