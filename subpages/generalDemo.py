@@ -55,6 +55,7 @@ def upload_file():
 
     if file_uploaded_bool:
         file_id = [convert(uploaded_file, st.session_state.get("token"))]
+        st.session_state.file_uploaded = False
 
     st.session_state.file_id = file_id
 
@@ -374,11 +375,9 @@ def upload_file_section():
     # display the file uploader
     uploaded_file = st.file_uploader("Upload a file", type=["pdf", "txt", "docx", "csv", "xls"], accept_multiple_files=False)
 
-    # update the uploaded file in the session
-    if st.session_state.uploaded_file != uploaded_file:
-        st.session_state.uploaded_file = uploaded_file
-    
     if uploaded_file:
+        # update the uploaded file in the session
+        st.session_state.uploaded_file = uploaded_file
         st.session_state.file_uploaded = True # indicates that the new file was uploaded
 
     return

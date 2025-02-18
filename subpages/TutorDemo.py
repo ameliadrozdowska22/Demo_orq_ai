@@ -13,12 +13,10 @@ def clear_history(reset_col):
         st.session_state.messages = []  # Clear the chat history immediately
         st.rerun()  # Force the app to rerun
 
+
 def upload_file():
     """
     This function takes the uploaded file from the session, creates, and adds a list with its ID to the session (ID is later used for the deployment invoke).
-    
-    Param: None
-    Return: None
     """
     file_uploaded_bool = st.session_state.file_uploaded
     uploaded_file = st.session_state.uploaded_file
@@ -26,10 +24,12 @@ def upload_file():
 
     if file_uploaded_bool:
         file_id = [convert(uploaded_file, st.session_state.get("token"))]
+        st.session_state.file_uploaded = False
 
     st.session_state.file_id = file_id
 
     return
+
 
 def chat_layout():
     """
@@ -164,12 +164,10 @@ def show():
                 # display the file uploader
                 uploaded_file = st.file_uploader("Additional Material", type=["pdf", "txt", "docx", "csv", "xls"], accept_multiple_files=False)
 
-                # update the uploaded files in the session
-                if st.session_state.uploaded_file != uploaded_file:
-                    st.session_state.uploaded_file = uploaded_file
-                
                 if uploaded_file:
-                    st.session_state.file_uploaded = True
+                    # update the uploaded file in the session
+                    st.session_state.uploaded_file = uploaded_file
+                    st.session_state.file_uploaded = True # indicates that the new file was uploaded
             
             except APIError as e:
                 st.info('Please verify if this token has an access to "ACSW Demos" workspace')
