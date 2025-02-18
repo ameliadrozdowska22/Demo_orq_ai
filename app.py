@@ -136,5 +136,5 @@ elif st.session_state.current_page == "Examination Checker":
     st.session_state.key = "automatic_examination_check"
     ExamCheckerDemo.show()
 elif st.session_state.current_page == "FinooDemo":
-    st.session_state.key = "cormick"
+    st.session_state.key = "scriptie_beoordeling"
     FinooDemo.show()
