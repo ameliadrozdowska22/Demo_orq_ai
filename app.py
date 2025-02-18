@@ -40,7 +40,7 @@ if "give_correction" not in st.session_state: # Initialize the correction state 
 if "correction_widget_key" not in st.session_state: # Dynamically update the correction widget's key for resetting
     st.session_state.correction_widget_key = 0
 if "correction" not in st.session_state: # Initialize the correction value
-    st.session_state.feedback = None
+    st.session_state.correction_clicked = False
 
 
 

@@ -30,13 +30,13 @@ def generate_response(variable_dict, api_token, key_input, context_input, file_i
         api_key=api_token
     )
 
+    print(f"context {context_input}")
+    print(f"variabvles {variable_dict}")
+
     generation = client.deployments.invoke(
         key=key_input,
         context=context_input,
         inputs=variable_dict,
-        metadata={
-            "custom-field-name": "custom-metadata-value"
-        },
         messages= conv_memory,
         file_ids=file_id,
         invoke_options={"include_retrievals": True}
@@ -79,9 +79,6 @@ def get_dep_config(api_token, key_input):
         key=key_input,
         context={},
         inputs={},
-        metadata={
-            "custom-field-name": "custom-metadata-value"
-        }
     )
 
     # return prompt_config.to_dict()
@@ -205,11 +202,7 @@ def set_feedback(feedback, api_token, trace_id):
             'authorization': f'Bearer {api_token}'
         }
 
-        print("test_api")
-
         response = requests.post("https://api.orq.ai/v2/feedback", json=payload, headers=headers)
-
-        print(response)
 
     except Exception as e:
         print(e)
