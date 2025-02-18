@@ -30,9 +30,6 @@ def generate_response(variable_dict, api_token, key_input, context_input, file_i
         api_key=api_token
     )
 
-    print(f"context {context_input}")
-    print(f"variabvles {variable_dict}")
-
     generation = client.deployments.invoke(
         key=key_input,
         context=context_input,
