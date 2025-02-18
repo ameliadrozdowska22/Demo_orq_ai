@@ -14,9 +14,6 @@ def clear_history(reset_col):
 def upload_file():
     """
     This function takes the uploaded file from the session, creates, and adds a list with its ID to the session (ID is later used for the deployment invoke).
-    
-    Param: None
-    Return: None
     """
     file_uploaded_bool = st.session_state.file_uploaded
     uploaded_file = st.session_state.uploaded_file
@@ -24,6 +21,7 @@ def upload_file():
 
     if file_uploaded_bool:
         file_id = [convert(uploaded_file, st.session_state.get("token"))]
+        st.session_state.file_uploaded = False
 
     st.session_state.file_id = file_id
 
@@ -32,9 +30,7 @@ def upload_file():
 
 def context_section():
     """
-    This function creates a section with text fields representing keys and values in the context dictionary.
-    It creates the context dictionary based on user inputs and adds it to the session.
-    It creates buttons that show or hide context rows.
+    Takes the criteria number from the user input and adds it to the context dictionary 
     """
     st.markdown("<p style='font-weight: normal; font-size: 14px;'>Assessment criteria</p>", unsafe_allow_html=True)
 
@@ -51,7 +47,10 @@ def context_section():
 
     # adding a user context inputs to the session
     if context_value_input:
-        context_input_dict["beoordelingscriteria"] = context_value_input
+        if context_value_input == "all":
+            context_input_dict["beoordelingscriteria"] = context_value_input
+        else:
+            context_input_dict["beoordelingscriteria"] = int(context_value_input)
 
         st.session_state.context_input_dict = context_input_dict
         
@@ -59,7 +58,6 @@ def context_section():
 
 
 def add_correction():
-
     api_token = st.session_state.get("token")
     trace_id = st.session_state.get("trace_id")
     correction_clicked = st.session_state.get("correction_clicked")
@@ -81,7 +79,6 @@ def add_correction():
             submitted = st.form_submit_button("Submit Correction")
 
             if submitted and user_correction:
-                print(user_correction)
                 post_correction(user_correction, api_token, trace_id)
 
                 # Reset input field after submission
@@ -91,7 +88,6 @@ def add_correction():
 
 
 def display_feedback():
-
     api_token = st.session_state.get("token")
     trace_id = st.session_state.get("trace_id")
     feedback = st.session_state.get("feedback")
@@ -107,24 +103,14 @@ def display_feedback():
 
     return
 
-def manage_chat_history(chat_input, image):
 
-    image_message = None
-
+def manage_chat_history(chat_input):
     # Add the user message to the chat history
     text_message = {
         "role": "user",
         "content": [{"type": "text", "text": chat_input}]
     }
     st.session_state.messages.append(text_message)
-
-    # Append the uploaded image as a separate message
-    if image:
-        image_message = {
-            "role": "user",
-            "content": [{"type": "image_url", "image_url": { "url": image}}]
-        }
-        del st.session_state["uploaded_image"]
     
     # limit the number of past messages given to the model for a reference
     conv_memory = []
@@ -137,9 +123,6 @@ def manage_chat_history(chat_input, image):
     else:
         conv_memory = messages
 
-    if image_message:
-        conv_memory.append(image_message)
-
     return conv_memory
 
 
@@ -149,8 +132,7 @@ def chat_messages_layout(chat_input):
     key = st.session_state.key
     context = st.session_state.context_input_dict
     variable_dict = st.session_state.variable_dict
-    image = st.session_state.uploaded_image
-            
+
     if st.session_state.file_uploaded:
         upload_file()
 
@@ -163,7 +145,7 @@ def chat_messages_layout(chat_input):
     # display the response and a source from a model
     with st.chat_message("assistant"):
         try:
-            conv_memory = manage_chat_history(chat_input, image)
+            conv_memory = manage_chat_history(chat_input)
             # response = None
             response, sources, trace_id = generate_response(variable_dict, token, key, context, file_id, conv_memory)
 
@@ -199,7 +181,7 @@ def chat_messages_layout(chat_input):
 
 def chat_manager(chat_input):
     """
-    Displays the chat history Manages
+    Manages the chat history
     """
     token = st.session_state.token
     key = st.session_state.key
@@ -215,7 +197,10 @@ def chat_manager(chat_input):
     try:
         # check if the token and key were given to procede with the invoke
         if token and key and chat_input:
-            chat_messages_layout(chat_input)
+            if st.session_state.file_uploaded:
+                chat_messages_layout(chat_input)
+            else:
+                st.info("Please upload a document to evaluate")
 
     except Exception as e:
         print(e)
@@ -268,11 +253,9 @@ def upload_file_section():
     # display the file uploader
     uploaded_file = st.file_uploader("Upload the thesis", type=["pdf", "txt", "docx", "csv", "xls"], accept_multiple_files=False)
 
-    # update the uploaded file in the session
-    if st.session_state.uploaded_file != uploaded_file:
-        st.session_state.uploaded_file = uploaded_file
-    
     if uploaded_file:
+        # update the uploaded file in the session
+        st.session_state.uploaded_file = uploaded_file
         st.session_state.file_uploaded = True # indicates that the new file was uploaded
 
     return
