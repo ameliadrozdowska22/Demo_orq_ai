@@ -23,6 +23,8 @@ if "context_input_dict" not in st.session_state: # Initialize context dictionary
     st.session_state.context_input_dict = {}
 if "key" not in st.session_state:
     st.session_state.key = None
+if "token" not in st.session_state:
+    st.session_state.token = None
 if "current_page" not in st.session_state:
     st.session_state.current_page = "Main"
 if "feedback" not in st.session_state: # Initialize the feedback value
@@ -33,6 +35,13 @@ if "feedback_widget_key" not in st.session_state: # Dynamically update the feedb
     st.session_state.feedback_widget_key = 0
 if "trace_id" not in st.session_state:
     st.session_state.trace_id = 0
+if "give_correction" not in st.session_state: # Initialize the correction state (shown/ not shown)
+   st.session_state.give_correction = False
+if "correction_widget_key" not in st.session_state: # Dynamically update the correction widget's key for resetting
+    st.session_state.correction_widget_key = 0
+if "correction" not in st.session_state: # Initialize the correction value
+    st.session_state.correction_clicked = False
+
 
 
 def navigate_to(page):
