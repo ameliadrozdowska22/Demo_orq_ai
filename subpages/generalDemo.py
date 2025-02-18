@@ -19,9 +19,6 @@ def variable_textfields():
     """
     This function creates a text fields for every variable in the given deployment and places user input, from text fields,
     in the session with a corresponding key.
-    
-    Param: A list of variables
-    Return: None
     """
     token = st.session_state.get("token")
     key = st.session_state.get("key")
@@ -51,9 +48,6 @@ def variable_textfields():
 def upload_file():
     """
     This function takes the uploaded file from the session, creates, and adds a list with its ID to the session (ID is later used for the deployment invoke).
-    
-    Param: None
-    Return: None
     """
     file_uploaded_bool = st.session_state.file_uploaded
     uploaded_file = st.session_state.uploaded_file
@@ -72,9 +66,6 @@ def context_section():
     This function creates a section with text fields representing keys and values in the context dictionary.
     It creates the context dictionary based on user inputs and adds it to the session.
     It creates buttons that show or hide context rows.
-    
-    Param: None
-    Return: None
     """
     st.markdown("<p style='font-weight: normal; font-size: 14px;'>Context</p>", unsafe_allow_html=True)
     key_col, val_col, plus_col, min_col = st.columns([2, 2, 1, 1])
@@ -172,9 +163,6 @@ def add_correction():
 def image_uploader():
     """
     This function displays an image uploader, enclodes the uploaded immage with base 64 encoding, and adds it to the session in the URI format
-    
-    Param: None
-    Return: None
     """
     # Accept a single file
     image = st.file_uploader("Upload an image", type=["PNG", "JPG", "JPEG"], label_visibility="collapsed", accept_multiple_files=False)
