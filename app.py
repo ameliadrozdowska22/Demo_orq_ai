@@ -87,7 +87,7 @@ st.title(APP_TITLE)
 style()
 
 with st.sidebar:
-    useCase = st.selectbox("Chose the use case", options=["General", "Chat Deployment","Translator Deployment", "Law Tutor Chat", "Examination Checker", "Midas Chat", "Finoo Thesis Evaluator"], index=None)
+    useCase = st.selectbox("Select your use case", options=["General", "Chat Deployment","Translator Deployment", "Law Tutor Chat", "Examination Checker", "Midas Chat", "Finoo Thesis Evaluator"], index=None)
 
     if useCase == "General":
         page = "General"
